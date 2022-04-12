@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.IO;
+using UnityEngine.UI;
 
 public class SaveManager : MonoBehaviour
 {
@@ -18,12 +19,12 @@ public class SaveManager : MonoBehaviour
     string currentScene;
     bool isInMainScene;
 
-    public TMP_InputField inputField;
+    public Buttons buttons;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        highScore = Instance.highScore;
     }
 
     // Update is called once per frame
@@ -37,10 +38,11 @@ public class SaveManager : MonoBehaviour
             mainManager = GameObject.Find("MainManager").GetComponent<MainManager>();
         }
 
-
         HighScore();
-        
+
+        Debug.Log(playerName);
     }
+
 
     //data persistence between scenes
     private void Awake()
@@ -55,6 +57,7 @@ public class SaveManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadSave();
     }
 
     //updates highscore
@@ -66,37 +69,36 @@ public class SaveManager : MonoBehaviour
             if (mainManager.m_Points > highScore)
             {
                 highScore = mainManager.m_Points;
+                highScoreOwner = playerName;
             }
         }
 
     }
 
-    public void SetName()
+    public void SetName(string name)
     {
-        playerName = inputField.text;
-        Debug.Log(playerName);
+        playerName = name;
     }
+
+    
 
     [System.Serializable]
-    class SaveData
+    public class SaveData
     {
-        public int highScore = highScore;
-        public string playerName;
-        public string highScoreOwner;
-
+        public int HighScore;
     }
 
-    public void SaveColor()
+    public void SaveScore()
     {
         SaveData data = new SaveData();
-        data.TeamColor = TeamColor;
+        data.HighScore = highScore;
 
         string json = JsonUtility.ToJson(data);
 
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 
-    public void LoadColor()
+    public void LoadSave()
     {
         string path = Application.persistentDataPath + "/savefile.json";
         if (File.Exists(path))
@@ -104,7 +106,7 @@ public class SaveManager : MonoBehaviour
             string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            TeamColor = data.TeamColor;
+            highScore = data.HighScore;
         }
     }
 }

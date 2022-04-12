@@ -18,7 +18,7 @@ public class HighScoreMenu : MonoBehaviour
 
     private void Update()
     {
-        text.text = "Name: " + saveManager.playerName + " Highscore: " + saveManager.highScore;
+        text.text = "Name: " + saveManager.highScoreOwner + " Highscore: " + saveManager.highScore;
     }
 
 }
