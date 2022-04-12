@@ -86,12 +86,14 @@ public class SaveManager : MonoBehaviour
     public class SaveData
     {
         public int HighScore;
+        public string HighScoreOwner;
     }
 
     public void SaveScore()
     {
         SaveData data = new SaveData();
         data.HighScore = highScore;
+        data.HighScoreOwner = highScoreOwner;
 
         string json = JsonUtility.ToJson(data);
 
@@ -107,6 +109,21 @@ public class SaveManager : MonoBehaviour
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
             highScore = data.HighScore;
+            highScoreOwner = data.HighScoreOwner;
         }
+    }
+
+    public void DeleteSave()
+    {
+        File.Delete("/savefile.json");
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        // refresh editor view
+#if UNITY_EDITOR
+        UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 }
